@@ -58,11 +58,32 @@ replicaTo () {
 }
 
 statusDataNode () {
-    curl -k -X PUT -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/_cat/allocation?v"
+    curl -k -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/_cat/allocation?v"
 }
 
 statusElastic () {
-    curl -k -X PUT -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/_cat/health?v"
+    curl -k -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/_cat/health?v"
+}
+
+elasticList () {
+    curl -k -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/_cat/node?v"
+}
+
+elasticHealth () {
+    curl -k -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/_cluster/health"
+}
+
+BackUpELK () {
+	curl -k -X PUT -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/_snapshot/${variable[2]}/$1?wait_for_completion=true" -H 'Content-Type: application/json' -d '
+	{
+		"indices": "'"$1"'",
+		"ignore_unavailable": false,
+		"include_global_state": true
+	}
+	'
+	path="$2/"
+	tar -cjf $path$1.tar.bz2 /snapshot
+	curl -X DELETE -k -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/_snapshot/${variable[2]}/$1?pretty"
 }
 
 closeIndex () {
@@ -74,7 +95,10 @@ echo "
 2, unset upgrade mode.
 3, Set replica to n.
 4, Check health.
-5, Check data node status."
+5, Check data node status.
+6, Get elastic server list.
+7, Cluster health.
+8, Back up individuals index."
 echo "What is your choice: "; read choice
 
 case $choice in
@@ -96,4 +120,15 @@ case $choice in
     5 )
         statusDataNode
         ;;
+    6 )
+        elasticList
+        ;;
+    7 )
+        elasticHealth
+        ;;
+	8 )
+		echo "What indices would you like to back up: "; read indicesname;
+		echo "Enter the path to back up the data: "; read path;
+		BackUpELK $indicesname $path
+		;;
 esac
