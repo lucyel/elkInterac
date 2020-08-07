@@ -86,8 +86,24 @@ BackUpELK () {
 	curl -X DELETE -k -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/_snapshot/${variable[2]}/$1?pretty"
 }
 
+openIndex () {
+	echo "open index"
+	curl -X POST -k -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/$1/_open?pretty"
+}
+
 closeIndex () {
     echo "closed"
+	curl -X POST -k -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/$1/_close?pretty"
+}
+
+freezeIndex () {
+	echo "freeze index"
+	curl -X POST -k -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/$1/_freeze?pretty"
+}
+
+unfreezeIndex () {
+	echo "unfreeze index"
+	curl -X POST -k -u ${variable[3]}:${variable[4]} "${variable[5]}://${variable[0]}:${variable[1]}/$1/_unfreeze?pretty"
 }
 
 echo "
@@ -98,7 +114,11 @@ echo "
 5, Check data node status.
 6, Get elastic server list.
 7, Cluster health.
-8, Back up individuals index."
+8, Back up individuals index.
+9, Open index.
+10, Close index.
+11, Freeze index.
+12, Unfreeze index."
 echo "What is your choice: "; read choice
 
 case $choice in
@@ -131,4 +151,19 @@ case $choice in
 		echo "Enter the path to back up the data: "; read path;
 		BackUpELK $indicesname $path
 		;;
+	9 )
+		echo "What indices would you like to open: "; read indicesname;
+		openIndex $indicesname
+		;;
+	10 )
+		echo "What indices would you like to close: "; read indicesname;
+		closeIndex $indicesname
+		;;
+	11 )
+		echo "What indices would you like to freeze: "; read indicesname;
+		freezeIndex $indicesname
+		;;
+	12 )
+		echo "What indices would you like to unfreeze: "; read indicesname;
+		unfreezeIndex $indicesname
 esac
