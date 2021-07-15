@@ -12,7 +12,7 @@ _dis=\$(id -u $_fick)
 if (( \$_dis > 0 ))
 then
 	export HISTSIZE=10000
-	export HISTTIMEFORMAT='%F %T'
+	export HISTTIMEFORMAT='%F %T '
 	export HISTFILE=/var/log/users_history/history-users-\$(who am I | awk '{print $1}';exit)-\$(date +%F)
 	export PROMPT_COMMAND='history -a'
 fi
@@ -20,7 +20,7 @@ _EOF_
 
 cat << __EOF__ >> /root/.bashrc
 export HISTSIZE=10000
-export HISTTIMEFORMAT='%F %T'
+export HISTTIMEFORMAT='%F %T '
 export HISTFILE=/var/log/sudo_history/history-sudo-\$(who am I | awk '{print $1}';exit)-\$(date +%F)
 export PROMPT_COMMAND='history -a'
 __EOF__
