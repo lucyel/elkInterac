@@ -2,8 +2,8 @@
 
 mkdir /var/log/users_history
 mkdir /var/log/sudo_history
-chmod 777 /var/log/sudo_history
-chmod +t /var/log/sudo_history
+chmod 777 /var/log/users_history
+chmod +t /var/log/users_history
 
 cat << _EOF_ > /etc/profile.d/users_history.sh
 _fick=$(who am i|awk '{print $1}')
